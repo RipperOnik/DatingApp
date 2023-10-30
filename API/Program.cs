@@ -56,7 +56,6 @@ app.UseAuthorization(); // are you authorized to do smh
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 
 app.MapControllers();
 
