@@ -1,12 +1,5 @@
-
-using System.Text;
-using API.Data;
-using API.Interfaces;
-using API.Services;
 using API.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,31 +13,9 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 
 
-
-// builder.Services.AddDbContext<DataContext>(opt =>
-// {
-//     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-// });
-// builder.Services.AddCors();
-
-// builder.Services.AddScoped<ITokenService, TokenService>();
-
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuerSigningKey = true, // otherwise our server won't check if token was signed by the issuer
-//             IssuerSigningKey = new SymmetricSecurityKey(
-//                 Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])
-//             ),
-//             ValidateIssuer = false,
-//             ValidateAudience = false
-//         };
-
-//     });
-
 var app = builder.Build();
+// Exception middleware has to be here 
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 
