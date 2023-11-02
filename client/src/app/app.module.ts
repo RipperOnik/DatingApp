@@ -42,6 +42,7 @@ import { ServerErrorComponent } from './errors/server-error/server-error.compone
     SharedModule, // importing a custom shared module
   ],
   providers: [
+    // registering the Error Interceptor
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent], // the starting point of the app
