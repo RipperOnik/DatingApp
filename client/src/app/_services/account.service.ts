@@ -3,11 +3,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { User } from '../_models/user';
 
+// always import fro, environment and not environment/development
+// because if we do that, we will always be in development mode
+import { environment } from 'src/environments/environment';
+
 @Injectable({
   providedIn: 'root', // inject into the app.module
 })
 export class AccountService {
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   // declare an observer amd observable
   private currentUserSource = new BehaviorSubject<User | null>(null);
   // exposing only observable part of the BehaviorSubject for security reasons
