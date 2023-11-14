@@ -3,6 +3,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -27,14 +28,16 @@ public class UsersController : BaseApiController
         _mapper = mapper;
         _photoService = photoService;
     }
-    [HttpGet] // /api/users
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    [HttpGet] // /api/users?pageSize=x&pageNumber=x
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-        var users = await _userRepository.GetMembersAsync();
+        var users = await _userRepository.GetMembersAsync(userParams);
 
-        // var mappedUsers = _mapper.Map<IEnumerable<MemberDto>>(users);
 
-        // return Ok(mappedUsers);
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage,
+        users.PageSize,
+        users.TotalCount,
+        users.TotalPages));
         return Ok(users);
     }
     [HttpGet("{username}")] // /api/users/{username}
