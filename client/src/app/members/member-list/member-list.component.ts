@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { Member } from 'src/app/_models/member';
 import { Pagination } from 'src/app/_models/pagination';
+import { User } from 'src/app/_models/user';
+import { UserParams } from 'src/app/_models/userParams';
+import { AccountService } from 'src/app/_services/account.service';
 import { MembersService } from 'src/app/_services/members.service';
 
 @Component({
@@ -12,17 +15,24 @@ import { MembersService } from 'src/app/_services/members.service';
 export class MemberListComponent implements OnInit {
   members: Member[] = [];
   pagination: Pagination | undefined;
-  pageSize = 5;
-  pageNumber = 1;
+  userParams: UserParams | undefined;
 
-  constructor(private memberService: MembersService) {}
+  genderList = [
+    { value: 'male', display: 'Males' },
+    { value: 'female', display: 'Females' },
+  ];
+
+  constructor(private memberService: MembersService) {
+    this.userParams = memberService.getUserParams();
+  }
 
   ngOnInit(): void {
     this.loadMembers();
   }
 
   loadMembers() {
-    this.memberService.getMembers(this.pageNumber, this.pageSize).subscribe({
+    if (!this.userParams) return;
+    this.memberService.getMembers(this.userParams).subscribe({
       next: (paginatedResponse) => {
         if (paginatedResponse.result && paginatedResponse.pagination) {
           this.members = paginatedResponse.result;
@@ -32,9 +42,15 @@ export class MemberListComponent implements OnInit {
     });
   }
   pageChanged(event: any) {
-    if (this.pageNumber !== event.page) {
-      this.pageNumber = event.page;
+    if (this.userParams && this.userParams?.pageNumber !== event.page) {
+      this.userParams.pageNumber = event.page;
+      this.memberService.setUserParams(this.userParams);
+      this.userParams = this.memberService.getUserParams();
       this.loadMembers();
     }
+  }
+  resetFilters() {
+    this.userParams = this.memberService.resetUserParams();
+    this.loadMembers();
   }
 }

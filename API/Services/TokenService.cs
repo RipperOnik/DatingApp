@@ -19,7 +19,8 @@ public class TokenService : ITokenService
         // Step 1: Define the claims for the JWT, which typically include user-specific data.
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.UserName) // In this case, adding the user's username as a claim.
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
         };
 
         // Step 2: Define the credentials used for signing the token, typically with a secret key.

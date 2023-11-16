@@ -30,11 +30,25 @@ public class UserRepository : IUserRepository
 
     public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
-        var query = _context.Users
-            // using projection allows to use join automatically 
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .AsNoTracking();
-        return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+        var query = _context.Users.AsQueryable();
+
+        query = query.Where(x => x.UserName != userParams.CurrentUsername);
+        query = query.Where(x => x.Gender == userParams.Gender);
+
+        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+        query = query.Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob);
+
+        //Order By
+        query = userParams.OrderBy == "created" ? query.OrderByDescending(u => u.Created) : query.OrderByDescending(u => u.LastActive);
+
+
+        return await PagedList<MemberDto>.CreateAsync(
+            query.AsNoTracking().ProjectTo<MemberDto>(_mapper.ConfigurationProvider), // using projection allows to use join automatically 
+            userParams.PageNumber,
+            userParams.PageSize
+        );
     }
 
     public async Task<AppUser> GetUserByIdAsync(int id)
