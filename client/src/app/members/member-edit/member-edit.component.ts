@@ -33,7 +33,9 @@ export class MemberEditComponent implements OnInit {
     private toastr: ToastrService
   ) {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
-      next: (user) => (this.user = user),
+      next: (user) => {
+        this.user = user;
+      },
     });
   }
 

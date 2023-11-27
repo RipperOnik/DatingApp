@@ -22,10 +22,11 @@ public class AppUser
     // Navigation property - will create 1:m relationship with Photo Entity 
     public List<Photo> Photos { get; set; } = new();
 
-    // public int GetAge()
-    // {
-    //     return DateOfBirth.CalculateAge();
-    // }
+    // M:M Relationship 
+    public List<UserLike> LikedUsers { get; set; }
+    public List<UserLike> LikedByUsers { get; set; }
+    public List<Message> MessagesSent { get; set; }
+    public List<Message> MessagesReceived { get; set; }
 
 }
 
