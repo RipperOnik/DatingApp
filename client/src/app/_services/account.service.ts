@@ -6,6 +6,7 @@ import { User } from '../_models/user';
 // always import fro, environment and not environment/development
 // because if we do that, we will always be in development mode
 import { environment } from 'src/environments/environment';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root', // inject into the app.module
@@ -17,7 +18,10 @@ export class AccountService {
   // exposing only observable part of the BehaviorSubject for security reasons
   currentUser$ = this.currentUserSource.asObservable();
   // getting http through DI
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private presenceService: PresenceService
+  ) {}
 
   login(model: any) {
     return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
@@ -40,11 +44,19 @@ export class AccountService {
     );
   }
   setCurrentUser(user: User) {
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role;
+    Array.isArray(roles) ? (user.roles = roles) : user.roles.push(roles);
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
+    this.presenceService.createHubConnection(user);
   }
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+    this.presenceService.stopHubConnection();
+  }
+  getDecodedToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }
