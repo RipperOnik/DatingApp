@@ -1,13 +1,18 @@
-# fly.toml app configuration file generated for datingmadeeasy on 2024-03-09T13:54:50-05:00
+# fly.toml app configuration file generated for datingmadeez on 2024-03-09T16:35:27-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'datingmadeeasy'
+app = 'datingmadeez'
 primary_region = 'yyz'
 
 [build]
   image = 'ripperoni/datingapp:latest'
+
+[env]
+  ASPNETCORE_URLS="http://+:8080"
+  CloudinarySettings__CloudName="dkuattcu0"
+  CloudinarySettings__ApiKey="395319978467498"
 
 [http_service]
   internal_port = 8080

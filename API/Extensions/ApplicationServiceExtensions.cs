@@ -14,10 +14,6 @@ public static class ApplicationServiceExtensions
         IConfiguration config
         )
     {
-        services.AddDbContext<DataContext>(opt =>
-        {
-            opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-        });
         services.AddCors();
 
         services.AddScoped<ITokenService, TokenService>();
